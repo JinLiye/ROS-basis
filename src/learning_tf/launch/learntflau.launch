@@ -15,8 +15,31 @@
     <node pkg="learning_tf" type="create_tf.py" name="create_tf2" output="screen">
         <param name="turtle" type="string" value="turtle2"/>
     </node>
+
+    <!-- 海龟2的tf发布节点 -->
+    <node pkg="learning_tf" type="create_tf.py" name="create_tf3" output="screen">
+        <param name="turtle" type="string" value="turtle3"/>
+    </node>
+
+    <!-- 海龟2的tf发布节点 -->
+    <node pkg="learning_tf" type="create_tf.py" name="create_tf4" output="screen">
+        <param name="turtle" type="string" value="turtle4"/>
+    </node>
     
     <!-- tf监听节点 -->
-    <node pkg="learning_tf" type="gettf.py" name="turtle_tf_listener" />
+    <node pkg="learning_tf" type="gettf.py" name="turtle_tf_listener1" output="screen">
+        <param name="turtle" type="string" value="turtle2"/>
+        <param name="desire_dis" type="double" value="1.5"/>
+    </node>
+
+    <node pkg="learning_tf" type="gettf.py" name="turtle_tf_listener2" output="screen">
+        <param name="turtle" type="string" value="turtle3"/>
+        <param name="desire_dis" type="double" value="3"/>
+    </node>
+
+    <node pkg="learning_tf" type="gettf.py" name="turtle_tf_listener3" output="screen">
+        <param name="turtle" type="string" value="turtle4"/>
+        <param name="desire_dis" type="double" value="4.5"/>
+    </node>
 
 </launch>
