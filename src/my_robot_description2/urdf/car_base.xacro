@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<robot name="calf" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find my_robot_description2)/urdf/inertial.xacro" />
+
+    <!--常数派  -->
+    <xacro:property name="M_PI" value="3.1415926"/>
+    <!-- 轮胎半径 -->
+    <xacro:property name="wheel_radius" value="0.08"/>
+    <!-- 轮胎厚度 -->
+    <xacro:property name="wheel_width" value="0.08"/>
+    <!-- 轮胎重量 -->
+    <xacro:property name="wheel_mass" value="2"/>
+    <xacro:property name="wheel_joint_y" value="${base_width/2 + wheel_width/2}"/>
+    <xacro:property name="wheel_joint_z" value="${base_height/2 - 0.05}"/>
+    <xacro:property name="wheel_joint_x" value="${base_length / 4}"/>
+
+    <!-- 车身长度 -->
+    <xacro:property name="base_length" value="0.6"/>
+    <!-- 车身宽度 -->
+    <xacro:property name="base_width" value="0.40"/>
+    <!-- 车身高度 -->
+    <xacro:property name="base_height" value="0.28"/>
+    <!-- 质量 -->
+    <xacro:property name="base_mass" value="20" /> 
+
+
+    <!-- Defining the colors used in this robot -->
+    <material name="yellow">
+        <color rgba="1 0.4 0 1"/>
+    </material>
+    <material name="black">
+        <color rgba="0 0 0 0.95"/>
+    </material>
+    <material name="gray">
+        <color rgba="0.75 0.75 0.75 1"/>
+    </material>
+
+    <!-- Macro for robot wheel -->
+    <xacro:macro name="wheel" params="prefix reflect reflect2">
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <origin xyz="${reflect2*wheel_joint_x} ${reflect*wheel_joint_y} ${-wheel_joint_z}" rpy="0 0 0"/>
+            <parent link="base_link"/>
+            <child link="${prefix}_wheel_link"/>
+            <axis xyz="0 1 0"/>
+        </joint>
+
+        <link name="${prefix}_wheel_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length = "${wheel_width}"/>
+                </geometry>
+                <material name="gray" />
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="${M_PI/2} 0 0" />
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length = "${wheel_width}"/>
+                </geometry>
+            </collision>
+            <xacro:cylinder_inertial_matrix  m="${wheel_mass}" r="${wheel_radius}" h="${wheel_width}" />
+        </link>
+        <gazebo reference="${prefix}_wheel_link">
+            <material>Gazebo/Gray</material>
+        </gazebo>
+    </xacro:macro>
+
+    <!-- 主体 -->
+    <xacro:macro name="car_base">
+    <!-- 定位点 -->
+        <link name="base_footprint">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.001 0.001 0.001" />
+                </geometry>
+            </visual>
+        </link>
+
+        <gazebo reference="base_footprint">
+            <turnGravityOff>true</turnGravityOff>
+        </gazebo>
+
+        <joint name="base_footprint_joint" type="fixed">
+            <origin xyz="0 0 ${base_length/2}" rpy="0 0 0" />        
+            <parent link="base_footprint"/>
+            <child link="base_link" />
+        </joint>
+
+        <link name="base_link">
+            <visual>
+                <origin xyz=" 0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="${base_length} ${base_width} ${base_height}"/>
+                </geometry>
+                <material name="yellow" />
+            </visual>
+            <collision>
+                <origin xyz=" 0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="${base_length} ${base_width} ${base_height}"/>
+                </geometry>
+            </collision>   
+            <xacro:box_inertial_matrix m="${base_mass}" l="${base_length}" w="${base_width}" h="${base_height}" />
+        </link>
+        <gazebo reference="base_link">
+            <material>Gazebo/Blue</material>
+        </gazebo>
+
+        <xacro:wheel prefix="left" reflect="-1" reflect2="1"/>
+        <xacro:wheel prefix="right" reflect="1" reflect2="1"/>
+        <!-- <xacro:wheel prefix="left2" reflect="-1" reflect2="-1"/> -->
+        <!-- <xacro:wheel prefix="right2" reflect="1" reflect2="-1"/> -->
+    </xacro:macro>
+</robot>
