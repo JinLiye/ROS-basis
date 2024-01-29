@@ -1,6 +1,6 @@
 <launch>
   <!-- 定义 gazebo 参数变量 -->
-  <arg name="gazebo_world" default="$(find my_robot_description2)/worlds/room.world" />
+  <arg name="gazebo_world" default="$(find my_robot_description2)/worlds/world2.world" />
   <arg name="use_sim_time" default="true"/>
 
   <!-- 定义 ROS 参数 -->

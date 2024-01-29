@@ -22,7 +22,7 @@
     <!-- 车身高度 -->
     <xacro:property name="base_height" value="0.28"/>
     <!-- 质量 -->
-    <xacro:property name="base_mass" value="20" /> 
+    <xacro:property name="base_mass" value="200" /> 
 
 
     <!-- Defining the colors used in this robot -->
@@ -109,7 +109,7 @@
         </gazebo>
 
         <xacro:wheel prefix="left" reflect="-1" reflect2="1"/>
-        <xacro:wheel prefix="right" reflect="1" reflect2="1"/>
+        <!-- <xacro:wheel prefix="right" reflect="1" reflect2="1"/> -->
         <!-- <xacro:wheel prefix="left2" reflect="-1" reflect2="-1"/> -->
         <!-- <xacro:wheel prefix="right2" reflect="1" reflect2="-1"/> -->
     </xacro:macro>
