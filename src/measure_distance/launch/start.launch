@@ -1,0 +1,11 @@
+<launch>
+    <param name="/std_dev" value="1"/>
+
+    <node name="distance_sim" pkg="measure_distance" type="distance.py" />
+    <node name="temp__sensor" pkg="measure_distance" type="temp_sensor.py" />
+    <node name="temp__filter" pkg="measure_distance" type="temp_filter.py" >
+        <param name="x0" value="50"/>
+    </node>
+
+    <node name="plot" pkg="rqt_plot" type="rqt_plot" args="/distance_temp /temp_sensor /temp_filter"/>
+</launch> 
