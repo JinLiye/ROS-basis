@@ -41,7 +41,7 @@ def main():
         pub1.publish(c.p)
         pub2.publish(c.v)
         pub3.publish(acc)
-        rospy.logerr(f'position:{c.p} a:{acc}')
+        # rospy.logerr(f'position:{c.p} a:{acc}')
         rate.sleep()
 
 if __name__ == '__main__':

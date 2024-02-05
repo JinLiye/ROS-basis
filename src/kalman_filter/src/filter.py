@@ -70,14 +70,14 @@ class kalmanFilter():
     def update(self,z):
         assert z.shape[0] == self.z_dim, "z.shape[0] must equals to z_dim"
         # 计算卡尔曼增益
-        self.K = self.P_ @ self.H.T @ np.linalg.inv(self.H @ self.P_ @ self.H.T + self.R)
+        self.K = (self.P_ @ self.H.T) @ np.linalg.inv(self.H @ self.P_ @ self.H.T + self.R)
 
         # 更新测量值
-        self.x = self.x + self.K @ (z - self.H @ self.x)
+        self.x = self.x_ + self.K @ (z - self.H @ self.x_)
 
         # 更新协方差
-        self.P = (np.identity(self.x_dim) - self.K @ self.H) @ self.P_ @ np.transpose(np.identity(self.x_dim) - self.K @ self.H) + self.K @ self.R @ self.K.T
-
+        # self.P = (np.identity(self.x_dim) - self.K @ self.H) @ self.P_ @ np.transpose(np.identity(self.x_dim) - self.K @ self.H) + self.K @ self.R @ self.K.T
+        self.P = (np.identity(self.x_dim) - self.K @ self.H) @ self.P_
         # 返回滤波器的输出
         return self.x
     
@@ -94,7 +94,61 @@ def get_gps(data):
     gps_value = data.data
 
 def main():
-    pass
+    rospy.init_node('filter_node')
+    # 定义参数
+    dt = rospy.get_param('dt')
+    x_dim = 2
+    u_dim = 1
+    z_dim = 2
+
+    A = np.array([[1, dt], 
+                  [0, 1]])
+    B = np.array([[0.5 * dt * dt],[dt]])
+    H = np.array([[1,0],[0,1]])
+    gps_std_dev = rospy.get_param('/gps_std_dev')
+    odom_std_dev = rospy.get_param('/odom_std_dev')
+    Q = np.array([[gps_std_dev**2,0],[0,odom_std_dev**2]])
+    measure_gps_std_dev = rospy.get_param('/measure_gps_std_dev')
+    measure_odom_std_dev = rospy.get_param('/measure_odom_std_dev')
+    R = np.array([[measure_gps_std_dev**2,0],[0,measure_odom_std_dev**2]])
+
+    x0 = np.array([[0],[0]])
+    P0 = np.array([[1,0],[0,1]])
+    # 订阅参数
+    rospy.Subscriber('p_gps',Float64,get_gps)
+    rospy.Subscriber('v_odom',Float64,get_odom)
+    rospy.Subscriber('acceleration',Float64,get_a)
+
+
+    # 初始化滤波类
+    kf = kalmanFilter(x_dim,u_dim,z_dim,A,B,H,Q,R,x0,P0)
+
+    # 定义发布者
+    pub1 = rospy.Publisher('filter_p',Float64,queue_size=10)
+    pub2 = rospy.Publisher('filter_v',Float64,queue_size=10)
+
+    global odom_value,a_value,gps_value
+
+    # 轮询频率大一点，保证同步不丢失
+    rate = rospy.Rate(5 / dt)
+    i = 0
+    while not rospy.is_shutdown():
+        if odom_value is not None and gps_value is not None and a_value is not None:
+            # 预测
+            kf.predect(np.array([[a_value]]))
+            # 更新
+            x = kf.update(np.array([[gps_value],[odom_value]]))
+            i += 1
+            # 打印
+            rospy.loginfo(f'{i}: status:{kf.x}')
+            # 发布topic
+            pub1.publish(x[0,0])
+            pub2.publish(x[1,0])
+            # 等待下一次轮询
+            odom_value = None
+            gps_value = None
+            a_value = None
+        rate.sleep()
 
 if __name__ == "__main__":
-    pass
+    main()
