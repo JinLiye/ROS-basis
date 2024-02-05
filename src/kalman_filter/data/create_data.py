@@ -10,3 +10,9 @@ smoothed_data = gaussian_filter1d(data, sigma=3)
 
 # 将平滑后的数据写入本地NumPy文件
 np.save('accelerations.npy', np.array(smoothed_data))
+
+load_data = np.load(f'./accelerations.npy')
+i=0
+while i<len(load_data):
+    print(f'{load_data[i]}')
+    i += 1

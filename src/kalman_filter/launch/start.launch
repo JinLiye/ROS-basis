@@ -1,4 +1,8 @@
 <launch>
+    <param name="/gps_std_dev" value="0.8"/>
+    <param name="odom_std_dev" value="0.4"/>
+
     <node name="parm_sim" pkg="kalman_filter" type="parm_sim.py"/>
     <node name="gps" pkg="kalman_filter" type="gps.py"/>
+    <node name="odom" pkg="kalman_filter" type="odom.py"/>
 </launch> 

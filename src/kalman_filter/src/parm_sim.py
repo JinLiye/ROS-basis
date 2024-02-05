@@ -34,14 +34,14 @@ def main():
     v_std_dev = 0.3
     c = Car()
 
-    while (not rospy.is_shutdown) and i < 200 :
+    while (not rospy.is_shutdown()) and (i < len(load_data)) :
         acc = load_data[i]
         i += 1
         c.step(acc,dt,p_std_dev,v_std_dev)
         pub1.publish(c.p)
         pub2.publish(c.v)
         pub3.publish(acc)
-        rospy.loginfo(f'position:{c.p} a:{acc}')
+        rospy.logerr(f'position:{c.p} a:{acc}')
         rate.sleep()
 
 if __name__ == '__main__':
