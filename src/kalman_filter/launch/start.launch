@@ -7,6 +7,8 @@
     <param name="/measure_gps_std_dev" value="1.3"/>
     <param name="/measure_odom_std_dev" value="1.5"/>
 
+    <param name="acceleration_file" value="$(find kalman_filter)/data/accelerations.npy"/>
+
     <!-- 节点启动 -->
     <node name="parm_sim" pkg="kalman_filter" type="parm_sim.py"/>
     <node name="gps" pkg="kalman_filter" type="gps.py"/>

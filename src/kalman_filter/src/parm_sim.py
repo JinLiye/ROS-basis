@@ -26,7 +26,8 @@ def main():
     rate = rospy.Rate(10)
     # filepath = f'../data/accelerations.npy'
     
-    filepath = f'/home/qrobo/learn_ws/src/kalman_filter/data/accelerations.npy'
+    # filepath = f'/home/qrobo/learn_ws/src/kalman_filter/data/accelerations.npy'
+    filepath = rospy.get_param("acceleration_file")
     load_data = np.load(filepath)
     i = 0
     dt = 0.1
