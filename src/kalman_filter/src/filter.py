@@ -70,4 +70,31 @@ class kalmanFilter():
     def update(self,z):
         assert z.shape[0] == self.z_dim, "z.shape[0] must equals to z_dim"
         # 计算卡尔曼增益
-        pass
+        self.K = self.P_ @ self.H.T @ np.linalg.inv(self.H @ self.P_ @ self.H.T + self.R)
+
+        # 更新测量值
+        self.x = self.x + self.K @ (z - self.H @ self.x)
+
+        # 更新协方差
+        self.P = (np.identity(self.x_dim) - self.K @ self.H) @ self.P_ @ np.transpose(np.identity(self.x_dim) - self.K @ self.H) + self.K @ self.R @ self.K.T
+
+        # 返回滤波器的输出
+        return self.x
+    
+def get_a(data):
+    global a_value
+    a_value = data.data
+
+def get_odom(data):
+    global odom_value
+    odom_value = data.data
+
+def get_gps(data):
+    global gps_value
+    gps_value = data.data
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    pass
