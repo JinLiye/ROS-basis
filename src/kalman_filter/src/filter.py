@@ -187,7 +187,7 @@ def main():
 
 
     # 初始化滤波类
-    kf = kalmanFilter(x_dim,u_dim,z_dim,A,B,H,Q,R,x0,P0)
+    kf = KalmanFilter2(x_dim,u_dim,z_dim,A,B,H,Q,R,x0,P0)
 
     # 定义发布者
     pub1 = rospy.Publisher('filter_p',Float64,queue_size=10)
@@ -197,12 +197,12 @@ def main():
 
     # 轮询频率大一点，保证同步不丢失
     rate = rospy.Rate(5 / dt)
-    i = 0t
+    i = 0
     while not rospy.is_shutdown():
         if odom_value is not None and gps_value is not None and a_value is not None:
             # 预测
             # kf.predect(np.array([[a_value]]))
-            kf.predect(np.array([[a_value]]))
+            kf.predict(np.array([[a_value]]))
             # 更新
             x = kf.update(np.array([[gps_value],[odom_value]]))
             i += 1
