@@ -6,7 +6,7 @@ from std_msgs.msg import Float64
 def getodom(data,params):
     # rospy.loginfo(f'gps:{data}')
     dev = params[0]
-    measure = data.data + np.random.normal(dev)
+    measure = data.data + np.random.normal(0,dev)
 
     pub= params[1]
     pub.publish(measure)

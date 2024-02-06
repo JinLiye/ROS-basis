@@ -18,4 +18,6 @@
     <!-- 启动绘图节点 -->
     <node name="plot_p" pkg="rqt_plot" type="rqt_plot" args="/position /p_gps /filter_p" required="true" />
     <node name="plot_v" pkg="rqt_plot" type="rqt_plot" args="/velocity /v_odom /filter_v" required="true" />
+
+    <node name="graph" pkg="rqt_graph" type="rqt_graph" />
 </launch> 

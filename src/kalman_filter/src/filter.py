@@ -81,6 +81,72 @@ class kalmanFilter():
         # 返回滤波器的输出
         return self.x
     
+class KalmanFilter2():
+    def __init__(self, x_dim, u_dim, z_dim, A, B, H, Q, R, x0, P0) -> None:
+        # 数据检验
+        assert A.shape[0] == x_dim and A.shape[1] == x_dim, "A.shape must be x_dim * x_dim!"
+        assert B.shape[0] == x_dim and B.shape[1] == u_dim, "B.shape must be x_dim * u_dim!"
+        assert H.shape[0] == z_dim and H.shape[1] == x_dim, "H.shape must be z_dim * x_dim!"
+        assert Q.shape[0] == x_dim and Q.shape[1] == x_dim, "Q.shape must be x_dim * x_dim!"
+        assert R.shape[0] == z_dim and R.shape[1] == z_dim, "R.shape must be z_dim * z_dim!"
+        assert x0.shape[0] == x_dim, "x0.shape[0] must be x_dim!"
+        assert P0.shape[0] == x_dim and P0.shape[1] == x_dim, "P0.shape must be x_dim * x_dim!"
+
+        # 赋值
+        self.x_dim = x_dim
+        self.u_dim = u_dim
+        self.z_dim = z_dim
+        self.A = A
+        self.B = B
+        self.H = H
+        self.Q = Q
+        self.R = R
+
+        # 状态的后验估计
+        self.x = x0
+
+        # 状态的先验估计
+        self.x_ = None
+
+        # 后验估计的协方差
+        self.P = P0
+
+        # 先验估计的协方差
+        self.P_ = None
+
+        # 卡尔曼增益
+        self.K = None
+    
+    def predict(self, u=None):
+        # 预测，传入控制量 u_k
+
+        # 先验估计
+        self.x_ = self.A @ self.x
+        if u is not None:
+            assert u.shape[0] == self.u_dim, "u.shape[0] must be u_dim!"
+            self.x_ += self.B @ u
+        
+        # 先验估计的协方差
+        self.P_ = self.A @ self.P @ self.A.T + self.Q
+
+    def update(self, z):
+        #更新，传入测量值 z_k
+
+        assert z.shape[0] == self.z_dim, "z.shape[0] must be z_dim!"
+
+        # 计算卡尔曼增益
+        self.K = (self.P_ @ self.H.T) @ np.linalg.inv(self.H @ self.P_ @ self.H.T + self.R)
+
+        # 后验估计
+        self.x = self.x_ + self.K @ (z - self.H @ self.x_)
+
+        # 后验估计的协方差
+        self.P = (np.identity(self.x_dim) - self.K @ self.H) @ self.P_
+        
+        # 返回后验估计，滤波器的输出
+        return self.x
+
+    
 def get_a(data):
     global a_value
     a_value = data.data
@@ -127,14 +193,15 @@ def main():
     pub1 = rospy.Publisher('filter_p',Float64,queue_size=10)
     pub2 = rospy.Publisher('filter_v',Float64,queue_size=10)
 
-    global odom_value,a_value,gps_value
+    global gps_value, odom_value, a_value
 
     # 轮询频率大一点，保证同步不丢失
     rate = rospy.Rate(5 / dt)
-    i = 0
+    i = 0t
     while not rospy.is_shutdown():
         if odom_value is not None and gps_value is not None and a_value is not None:
             # 预测
+            # kf.predect(np.array([[a_value]]))
             kf.predect(np.array([[a_value]]))
             # 更新
             x = kf.update(np.array([[gps_value],[odom_value]]))
