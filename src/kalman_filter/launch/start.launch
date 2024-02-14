@@ -1,10 +1,10 @@
 <launch>
     <!-- 参数定义 -->
-    <param name="/gps_std_dev" value="5.8"/>
-    <param name="/odom_std_dev" value="1.4"/>
+    <param name="/gps_std_dev" value="0.4"/>
+    <param name="/odom_std_dev" value="0.4"/>
     <param name="dt" value="0.1"/>
 
-    <param name="/measure_gps_std_dev" value="1.3"/>
+    <param name="/measure_gps_std_dev" value="1.6"/>
     <param name="/measure_odom_std_dev" value="1.5"/>
 
     <param name="acceleration_file" value="$(find kalman_filter)/data/accelerations.npy"/>
